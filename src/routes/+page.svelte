@@ -1,15 +1,12 @@
-<!-- YOU CAN DELETE EVERYTHING IN THIS PAGE -->
+<script>
+  import { profile, events, loaded } from "$lib/common";
+</script>
 
-<div class="container h-full mx-auto flex justify-center items-center">
-	<div class="space-y-5">
-		<h1 class="h1">Let's get cracking bones!</h1>
-		<p>Start by exploring:</p>
-		<ul>
-			<li><code class="code">/src/routes/+layout.svelte</code> - barebones layout</li>
-			<li><code class="code">/src/app.postcss</code> - app wide css</li>
-			<li>
-				<code class="code">/src/routes/+page.svelte</code> - this page, you can replace the contents
-			</li>
-		</ul>
-	</div>
-</div>
+loaded: {$loaded}
+{#if $loaded}
+  <div class="h1">Hello {$profile.displayName}</div>
+
+  {#each $events as event}
+    <div>{event.content}</div>
+  {/each}
+{/if}
