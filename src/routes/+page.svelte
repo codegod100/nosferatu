@@ -14,27 +14,7 @@
     console.log("grabbing events", filter);
 
     events = await $ndk.fetchEvents(filter);
-    for (let event of events) {
-      if (!profiles[event.author.pubkey]) {
-        console.log("grabbing profile", event.author.pubkey);
-        await event.author.fetchProfile();
-        profiles[event.author.pubkey] = event.author.profile;
-      } else {
-        console.log("already have profile", event.author.profile);
-      }
-      event.events = [];
-      for (let tag of event.tags) {
-        if (tag[0] === "e") {
-          console.log("fetching", tag[1]);
-          const encoded = nip19.noteEncode(tag[1]);
 
-          $ndk.fetchEvent(encoded).then(async (ev) => {
-            console.log("got event", ev);
-            event.events.push(ev);
-          });
-        }
-      }
-    }
     events_loaded = true;
     console.log("events", events);
   };
