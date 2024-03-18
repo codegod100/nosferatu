@@ -1,9 +1,7 @@
 import { writable } from "svelte/store";
 
-export const profile = writable({
 
-})
-
-export const events = writable([])
+export const user = writable({})
+export const ndk = writable({})
 
 export const loaded = writable(false)
