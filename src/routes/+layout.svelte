@@ -2,6 +2,7 @@
   import "../app.postcss";
   import NDK, { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
   import { user, loaded, ndk } from "$lib/common";
+  import NDKSvelte from "@nostr-dev-kit/ndk-svelte";
   // Highlight JS
   import hljs from "highlight.js/lib/core";
   import "highlight.js/styles/github-dark.css";
@@ -33,7 +34,7 @@
   import { browser } from "$app/environment";
   const init = async () => {
     const nip07signer = new NDKNip07Signer();
-    const _ndk = new NDK({
+    const _ndk = new NDKSvelte({
       signer: nip07signer,
       explicitRelayUrls: ["wss://nos.lol"],
     });

@@ -31,7 +31,10 @@
     "@floating-ui/dom": "1.6.3",
     "@getalby/sdk": "^3.4.0",
     "@nostr-dev-kit/ndk": "^2.5.0",
+    "@nostr-dev-kit/ndk-svelte": "^2.2.7",
+    "@nostr-dev-kit/ndk-svelte-components": "^2.2.7",
     "highlight.js": "11.9.0",
+    "javascript-time-ago": "^2.5.9",
     "websocket-polyfill": "^1.0.0"
   }
 }

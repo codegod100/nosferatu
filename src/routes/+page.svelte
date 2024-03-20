@@ -10,7 +10,7 @@
     const _follows = await $user.follows();
     const _af = Array.from(_follows);
     const pubKeys = _af.map((f) => f.pubkey);
-    const filter = { kinds: [1, 6], authors: pubKeys, limit: 50 };
+    const filter = { kinds: [1, 6], authors: pubKeys, limit: 20 };
     console.log("grabbing events", filter);
 
     events = await $ndk.fetchEvents(filter);
