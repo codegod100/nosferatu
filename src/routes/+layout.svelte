@@ -2,7 +2,7 @@
   import "../app.postcss";
   import NDK, { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
   import { NRelay1, NSchema as n } from "@nostrify/nostrify";
-  import { user, p, follow_list, loaded, ndk } from "$lib/common";
+  import { user, p, profiles, follow_list, loaded, ndk } from "$lib/common";
   import { verifyEvent } from "nostr-tools/pure";
   import NDKSvelte from "@nostr-dev-kit/ndk-svelte";
   // Highlight JS
@@ -38,47 +38,43 @@
     console.log("looking");
     const relay = new NRelay1("wss://relay.damus.io");
     const pubkey = await window.nostr.getPublicKey();
-    for await (const msg of relay.req([{ kinds: [0, 3], authors: [pubkey] }])) {
-      // console.log({ msg });
-      if (msg[0] === "EVENT") {
-        if (msg[2].kind == 0) {
-          const metadata = n.json().pipe(n.metadata()).parse(msg[2].content);
-          $user = metadata;
-          console.log({ metadata });
-        }
-        if (msg[2].kind == 3) {
-          // console.log({ msg });
-          const event = n.event().refine(verifyEvent).parse(msg[2]);
-          let _follow_list = [];
-          for (const tag of event.tags) {
-            // console.log({ tag });
-            if (tag[0] == "p") {
-              _follow_list.push(tag[1]);
-            }
-          }
-          $follow_list = _follow_list;
-          let posts = await relay.query([
-            { kinds: [1], authors: _follow_list, limit: 20 },
-          ]);
-          let _posts = [];
-          for (const post of posts) {
-            let tags = post.tags.map((_tag) => _tag[0]);
-            if (!tags.includes("e")) {
-              _posts.push(post);
-            }
-          }
-          $p = _posts;
-          for (const post of _posts) {
-            console.log({ post });
-          }
-          console.log({ follow_list });
-          console.log({ event });
-          console.log(msg[2]);
-        }
+    for await (const msg of await relay.query([
+      { kinds: [0, 3], authors: [pubkey] },
+    ])) {
+      if (msg.kind == 0) {
+        const metadata = n.json().pipe(n.metadata()).parse(msg.content);
+        $user = metadata;
+        console.log({ metadata });
       }
-      if (msg[0] === "EOSE") break; // Sends a `CLOSE` message to the relay.
+      if (msg.kind == 3) {
+        const event = n.event().refine(verifyEvent).parse(msg);
+        let _follow_list = [];
+        for (const tag of event.tags) {
+          if (tag[0] == "p") {
+            _follow_list.push(tag[1]);
+          }
+        }
+        $follow_list = _follow_list;
+        let _profiles = await relay.query([
+          { kinds: [0], authors: _follow_list },
+        ]);
+        for (const profile of _profiles) {
+          const content = JSON.parse(profile.content);
+          $profiles[profile.pubkey] = content;
+        }
+        let posts = await relay.query([
+          { kinds: [1], authors: _follow_list, limit: 40 },
+        ]);
+        let _posts = [];
+        for (const post of posts) {
+          let tags = post.tags.map((_tag) => _tag[0]);
+          if (!tags.includes("e")) {
+            _posts.push(post);
+          }
+        }
+        $p = _posts;
+      }
     }
-    console.log({ pubkey });
   };
   if (browser) {
     init();
