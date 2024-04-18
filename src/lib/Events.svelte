@@ -1,9 +1,10 @@
 <script>
   import { user, loaded, ndk } from "$lib/common";
-  import { onMount } from "svelte";
+  import { onMount, beforeUpdate } from "svelte";
   import * as nip19 from "nostr-tools/nip19";
   import TimeAgo from "javascript-time-ago";
   import en from "javascript-time-ago/locale/en";
+  import { Avatar } from "@skeletonlabs/skeleton";
   TimeAgo.addDefaultLocale(en);
   import {
     EventCard,
@@ -13,8 +14,8 @@
   export let events;
   export let profiles;
   const timeAgo = new TimeAgo("en-US");
-  onMount(async () => {
-    console.log("mounted");
+  beforeUpdate(async () => {
+    load_events();
   });
   const load_events = async () => {
     console.log("loading events");
@@ -52,6 +53,7 @@
           const encoded = nip19.noteEncode(tag[1]);
 
           $ndk.fetchEvent(encoded).then(async (ev) => {
+            ev.id_encoded = encoded;
             console.log("got event", ev);
             event.events.push(ev);
           });
@@ -61,29 +63,36 @@
       }
     }
   };
-  load_events();
 </script>
 
 {#each events as event}
-  <div class="p-2">
+  <div class="grid grid-flow-col auto-cols-max inline-block align-middle">
     <div>
-      <span class="font-bold">Display name</span>: {profiles[
-        event.author.pubkey
-      ] && profiles[event.author.pubkey].displayName}
+      <Avatar
+        src={profiles[event.author.pubkey] &&
+          profiles[event.author.pubkey].image}
+      />
     </div>
-    <div>
-      <span class="font-bold">Event Id</span>:
-      <a href="https://primal.net/e/{event.id_encoded}"> {event.id}</a>
+    <div class="">
+      {profiles[event.author.pubkey] &&
+        profiles[event.author.pubkey].displayName}
     </div>
-    <div><span class="font-bold">Content</span>: {event.content}</div>
+  </div>
+  <div>
+    <div>{event.content}</div>
     <div>
-      <span class="font-bold">Created</span>: {timeAgo.format(
-        new Date(event.created_at * 1000),
-      )}
+      <a href="https://primal.net/e/{event.id_encoded || event.id}">
+        <span class="font-bold">Created</span>: {timeAgo.format(
+          new Date(event.created_at * 1000),
+        )}
+      </a>
     </div>
     <div><span class="font-bold">Kind</span>: {event.kind}</div>
     {#each event.tags as tag}
       <div><span class="font-bold">Tag</span>: {tag[0]} {tag[1]}</div>
+      {#if tag[0] == "r"}
+        <img src={tag[1]} />
+      {/if}
     {/each}
     <div>last id: {event.last && event.last.id}</div>
     <!-- <EventThread
@@ -92,6 +101,7 @@
       on:open={() => alert("yolo")}
     /> -->
     {#if event.events.length > 0}
+      <div>Nested:</div>
       <svelte:self events={event.events || []} {profiles} />
     {/if}
   </div>

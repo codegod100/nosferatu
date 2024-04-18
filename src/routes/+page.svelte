@@ -1,5 +1,5 @@
 <script>
-  import { user, loaded, ndk } from "$lib/common";
+  import { user, p, follow_list, loaded, ndk } from "$lib/common";
   import * as nip19 from "nostr-tools/nip19";
   import Events from "$lib/Events.svelte";
   $: events_loaded = false;
@@ -10,7 +10,7 @@
     const _follows = await $user.follows();
     const _af = Array.from(_follows);
     const pubKeys = _af.map((f) => f.pubkey);
-    const filter = { kinds: [1, 6], authors: pubKeys, limit: 20 };
+    const filter = { kinds: [1], authors: pubKeys, limit: 30 };
     console.log("grabbing events", filter);
 
     events = await $ndk.fetchEvents(filter);
@@ -24,12 +24,7 @@
   }
 </script>
 
-loaded: {$loaded}
-<button class="btn variant-filled" on:click={follows}>Feed</button>
-{#if $loaded}
-  <div class="h1">Hello {$user.profile.displayName}</div>
-  {#if events_loaded}
-    Events loaded
-    <Events {events} {profiles} />
-  {/if}
-{/if}
+<div class="h1">Hello {$user.display_name}</div>
+{#each $p as post}
+  <div>{post.content}</div>
+{/each}
