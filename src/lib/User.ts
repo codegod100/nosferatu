@@ -9,7 +9,7 @@ export interface User {
     relay: NRelay
 }
 
-interface FeedItem {
+export interface FeedItem {
     event: NostrEvent
     author: NostrMetadata
 }
@@ -41,6 +41,7 @@ export async function newUser(pubkey: string, relay: NRelay): Promise<User> {
 
 
     }
+    feed = []
     for (const event of await relay.query([{ kinds: [1], authors: follow_list, limit: 20 }])) {
         let author: NostrMetadata = {}
         // for (const meta of await relay.query([{ kinds: [0], authors: [event.pubkey] }])) {

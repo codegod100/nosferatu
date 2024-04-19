@@ -47,4 +47,9 @@
   }
 </script>
 
+<button
+  on:click={async () => {
+    init();
+  }}>Update</button
+>
 <slot />
