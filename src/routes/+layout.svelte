@@ -2,8 +2,17 @@
   import "../app.postcss";
   import NDK, { NDKNip07Signer, NDKEvent } from "@nostr-dev-kit/ndk";
   import { NRelay1, NSchema as n } from "@nostrify/nostrify";
-  import { user, p, profiles, follow_list, loaded, ndk } from "$lib/common";
+  import {
+    user,
+    p,
+    profiles,
+    follow_list,
+    loaded,
+    ndk,
+    getparent,
+  } from "$lib/common";
   import { verifyEvent } from "nostr-tools/pure";
+  import { nip19 } from "nostr-tools";
   import NDKSvelte from "@nostr-dev-kit/ndk-svelte";
   // Highlight JS
   import hljs from "highlight.js/lib/core";
@@ -49,6 +58,7 @@
       if (msg.kind == 3) {
         const event = n.event().refine(verifyEvent).parse(msg);
         let _follow_list = [];
+
         for (const tag of event.tags) {
           if (tag[0] == "p") {
             _follow_list.push(tag[1]);
@@ -67,8 +77,11 @@
         ]);
         let _posts = [];
         for (const post of posts) {
+          let parent = await getparent({ event: post, relay });
+          post.parent = parent;
           let tags = post.tags.map((_tag) => _tag[0]);
-          if (!tags.includes("e")) {
+          if (!tags.includes("k")) {
+            // post.author = $profiles[post.pubkey];
             _posts.push(post);
           }
         }
