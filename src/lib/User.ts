@@ -1,5 +1,4 @@
-import type { NostrEvent } from "@nostr-dev-kit/ndk";
-import type { NRelay, NostrMetadata } from "@nostrify/nostrify";
+import type { NRelay, NostrMetadata, NostrEvent } from "@nostrify/nostrify";
 import { NSchema as n } from '@nostrify/nostrify';
 import { verifyEvent, type VerifiedEvent } from 'nostr-tools';
 export interface User {
@@ -7,6 +6,7 @@ export interface User {
     follow_list: string[]
     posts: NostrEvent[]
     feed: FeedItem[]
+    relay: NRelay
 }
 
 interface FeedItem {
@@ -49,7 +49,7 @@ export async function newUser(pubkey: string, relay: NRelay): Promise<User> {
         const item = { event, author }
         feed.push(item)
     }
-    const user: User = { metadata, follow_list, posts, feed }
+    const user: User = { metadata, follow_list, posts, feed, relay }
     return user
 }
 
