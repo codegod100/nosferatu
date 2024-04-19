@@ -25,10 +25,10 @@ export async function newUser(pubkey: string, relay: NRelay): Promise<User> {
     ])) {
         metadata = n.json().pipe(n.metadata()).parse(msg.content);
     }
-    for (const msg of await relay.query([{ kinds: [1], authors: [pubkey], limit: 20 }])) {
-        const event: VerifiedEvent = n.event().refine(verifyEvent).parse(msg);
-        posts.push(event)
-    }
+    // for (const msg of await relay.query([{ kinds: [1], authors: [pubkey], limit: 20 }])) {
+    //     const event: VerifiedEvent = n.event().refine(verifyEvent).parse(msg);
+    //     posts.push(event)
+    // }
 
     for (const msg of await relay.query([{ kinds: [3], authors: [pubkey] }])) {
         const event: VerifiedEvent = n.event().refine(verifyEvent).parse(msg);
@@ -43,9 +43,9 @@ export async function newUser(pubkey: string, relay: NRelay): Promise<User> {
     }
     for (const event of await relay.query([{ kinds: [1], authors: follow_list, limit: 20 }])) {
         let author: NostrMetadata = {}
-        for (const meta of await relay.query([{ kinds: [0], authors: [event.pubkey] }])) {
-            author = n.json().pipe(n.metadata()).parse(meta.content);
-        }
+        // for (const meta of await relay.query([{ kinds: [0], authors: [event.pubkey] }])) {
+        //     author = n.json().pipe(n.metadata()).parse(meta.content);
+        // }
         const item = { event, author }
         feed.push(item)
     }
