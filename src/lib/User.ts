@@ -2,7 +2,7 @@ import type { NostrEvent } from "@nostr-dev-kit/ndk";
 import type { NRelay, NostrMetadata } from "@nostrify/nostrify";
 import { NSchema as n } from '@nostrify/nostrify';
 import { verifyEvent, type VerifiedEvent } from 'nostr-tools';
-interface User {
+export interface User {
     metadata: NostrMetadata,
     follow_list: string[]
     posts: NostrEvent[]

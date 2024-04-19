@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
-
-
-export const user = writable({})
+import type { User } from "$lib/User.js";
+let _user = {} as User
+export const user = writable(_user)
 export const follow_list = writable([])
 export const p = writable([])
 export const ndk = writable({})
